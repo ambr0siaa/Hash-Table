@@ -95,7 +95,7 @@ struct bucket *bucket_create(struct ht_item *item)
     return bucket;
 }
 
-struct bucket **buckets_new(size_t count)
+struct bucket **buckets_create(size_t count)
 {
     struct bucket **bs = malloc(sizeof(struct bucket) * count);
     for (size_t i = 0; i < count; ++i)
@@ -106,9 +106,10 @@ struct bucket **buckets_new(size_t count)
 void ht_bucket_push(Hash_Table *ht, struct ht_item *new_item, i64 index)
 {
     if (ht->buckets == NULL)
-        ht->buckets = buckets_new(ht->capacity);
+        ht->buckets = buckets_create(ht->capacity);
 
-    if (ht->buckets[index] != NULL) {
+    ht_colision(ht, index);
+    if (ht->collision_flag) {
         new_item->hash = ht->hfs(new_item->key); 
         index = new_item->hash % ht->capacity;
     }

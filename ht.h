@@ -60,7 +60,7 @@ void ht_init(Hash_Table *ht, size_t capacity, hash_func_t hf1, hash_func_t hf2);
 
 struct ht_item *ht_item_create(const char *key, i64 value, i64 hash);
 
-struct bucket **buckets_new(size_t count);
+struct bucket **buckets_create(size_t count);
 struct bucket *bucket_create(struct ht_item *item);
 struct bucket *ht_bucket_search(struct bucket *list, i64 hash);
 void ht_bucket_push(Hash_Table *ht, struct ht_item *new_item, i64 index);
