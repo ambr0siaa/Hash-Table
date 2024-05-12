@@ -199,7 +199,7 @@ void ht_summary(Hash_Table *ht)
             struct ht_item *item = ht->items[i]; 
             if (item != NULL) {
                 printf("    hash: [%lli], index: [%lli], key: [%s], value: [%lli]\n",
-                        item->hash, item->hash % ht->capacity, item->key, item->value);
+                        item->hash, ht_index(item->hash, ht->capacity), item->key, item->value);
             }
         }
     }
@@ -211,7 +211,7 @@ void ht_summary(Hash_Table *ht)
                 if (b != NULL) {
                     while (b != NULL) {
                         printf("    hash: [%lli], index: [%lli], key: [%s], value: [%lli]\n",
-                                b->item->hash, b->item->hash % ht->capacity, b->item->key, b->item->value);
+                                b->item->hash, ht_index(b->item->hash, ht->capacity), b->item->key, b->item->value);
                         b = b->next;
                     }
                 }
