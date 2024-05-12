@@ -143,12 +143,13 @@ int main()
 {
     Hash_Table ht = {0};
     ht_init(&ht, HT_CAPACITY,
-            (*hash_func_primary),
-            (*hash_func_secondary));
+            *hash_func_primary,
+            *hash_func_secondary);
     
     ht_generate(&ht);
     ht_summary(&ht);
 
+    // check that all instuctions has put
     for (size_t i = INST_MOV; i < IC; ++i) {
         i64 inst = 0;
         const char *key = inst_as_cstr(i);

@@ -123,7 +123,7 @@ void ht_insert(Hash_Table *ht, const char *key, i64 value)
 {
     i64 hash = ht->hfp(key);
     struct ht_item *new_item = ht_item_create(key, value, hash);
-    i64 index = new_item->hash % ht->capacity;
+    i64 index = ht_index(new_item->hash, ht->capacity);
     
     ht_overflow(ht);
     ht_colision(ht, index);
@@ -131,7 +131,7 @@ void ht_insert(Hash_Table *ht, const char *key, i64 value)
     if (!ht->overflow_flag) {
         if (ht->collision_flag) {
             new_item->hash = ht->hfs(new_item->key); 
-            index = new_item->hash % ht->capacity;
+            index = ht_index(new_item->hash, ht->capacity);
             ht_colision(ht, index);
 
             if (ht->collision_flag) {

@@ -47,6 +47,7 @@ struct Hash_Table {
 
 #define ht_overflow(ht)         (ht)->overflow_flag = (ht)->item_count + 1 > (ht)->capacity ? 1 : 0
 #define ht_colision(ht, index)  (ht)->collision_flag = (ht)->items[index] != NULL ? 1 : 0
+#define ht_index(hash, max)     (hash) % (max)
 
 i64 ror(i64 n, int k);
 
