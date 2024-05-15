@@ -146,7 +146,7 @@ i64 hash_func_primary(const char *str)
     return result;
 }
 
-struct ht_item *ht_item_create(const char *key, i64 value, i64 hash)
+struct ht_item *ht_item_create(const char *key, void *value, i64 hash)
 {
     struct ht_item *item = malloc(sizeof(struct ht_item));
     item->key = key;
@@ -173,8 +173,9 @@ void ht_init(Hash_Table *ht, size_t capacity)
 
 void ht_clean(Hash_Table *ht)
 {
-    for (size_t i = 0; i < ht->capacity; ++i)
+    for (size_t i = 0; i < ht->capacity; ++i) {
         free(ht->items[i]);
+    }
     free(ht->items);
 
     if (ht->overflow_flag ||
@@ -234,7 +235,7 @@ void ht_bucket_push(Hash_Table *ht, struct ht_item *new_item, i64 index)
     ht->bucket_count += 1;
 }
 
-void ht_insert(Hash_Table *ht, const char *key, i64 value)
+void ht_insert(Hash_Table *ht, const char *key, void *value)
 {
     i64 hash = ht->hfp(key);
     struct ht_item *new_item = ht_item_create(key, value, hash);
@@ -271,7 +272,7 @@ struct bucket *ht_bucket_search(struct bucket *list, i64 hash)
     return NULL;
 }
 
-int ht_get(Hash_Table *ht, const char *key, i64 *dst)
+int ht_get(Hash_Table *ht, const char *key, void **dst)
 {
     i64 hash1 = ht->hfp(key);
     i64 index1 = hash1 % ht->capacity;
@@ -312,7 +313,7 @@ void ht_summary(Hash_Table *ht)
         for (size_t i = 0; i < ht->capacity; ++i) {
             struct ht_item *item = ht->items[i]; 
             if (item != NULL) {
-                printf("    hash: [%lli], index: [%lli], key: [%s], value: [%lli]\n",
+                printf("    hash: [%lli], index: [%lli], key: [%s], value: [%p]\n",
                         item->hash, ht_index(item->hash, ht->capacity), item->key, item->value);
             }
         }
@@ -324,7 +325,7 @@ void ht_summary(Hash_Table *ht)
                 struct bucket *b = ht->buckets[i];
                 if (b != NULL) {
                     while (b != NULL) {
-                        printf("    hash: [%lli], index: [%lli], key: [%s], value: [%lli]\n",
+                        printf("    hash: [%lli], index: [%lli], key: [%s], value: [%p]\n",
                                 b->item->hash, ht_index(b->item->hash, ht->capacity), b->item->key, b->item->value);
                         b = b->next;
                     }

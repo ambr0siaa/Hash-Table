@@ -118,34 +118,81 @@ char *inst_as_cstr(Inst inst)
     }
 }
 
-void generate_ht(Hash_Table *ht)
+typedef struct {
+    Inst inst;
+    const char *as_cstr;
+} Inst_Def;
+
+typedef struct {
+    Inst_Def *allocs[IC];
+    size_t allocs_count;
+    Hash_Table *ht;
+} Inst_Table;
+
+void inst_table_init(Inst_Table *it, size_t capacity)
+{
+    it->ht = malloc(sizeof(Hash_Table));
+    ht_init(it->ht, capacity);
+}
+
+Inst_Def *inst_def_create(Inst_Table *it, Inst i, const char *inst_cstr)
+{
+    Inst_Def *d = malloc(sizeof(Inst_Def));
+    it->allocs[it->allocs_count++] = d;
+    d->as_cstr = inst_cstr;
+    d->inst = i;
+    return d;
+}
+
+void inst_table_push(Inst_Table *it, Inst_Def *d)
+{
+    ht_insert(it->ht, d->as_cstr, (void*)d);
+}
+
+int inst_table_get(Inst_Table *it, const char *key, Inst_Def **d)
+{
+    return ht_get(it->ht, key, (void*)d);
+}
+
+void generate_inst_table(Inst_Table *it)
 {
     for (size_t i = INST_MOV; i < IC; ++i) {
-        const char *key = inst_as_cstr(i);
-        ht_insert(ht, key, i);
+        Inst_Def *d = inst_def_create(it, i, inst_as_cstr(i));
+        inst_table_push(it, d);
     }
+}
+
+void inst_table_clean(Inst_Table *it)
+{
+    for (size_t i = 0; i < it->allocs_count; ++i)
+        free(it->allocs[i]);
+    ht_clean(it->ht);
+    free(it->ht);
+}
+
+void inst_table_summary(Inst_Table *it)
+{
+    ht_summary(it->ht);
 }
 
 int main()
 {
-    Hash_Table ht = {0};
-    ht_init(&ht, HT_CAPACITY);
-    
-    generate_ht(&ht);
-    ht_summary(&ht);
+    Inst_Table it = {0};
+    inst_table_init(&it, HT_CAPACITY);
+
+    generate_inst_table(&it);
+    ht_summary(it.ht);
 
     // check that all instructions has put and can be taking out
     for (size_t i = INST_MOV; i < IC; ++i) {
-        i64 inst = 0;
+        Inst_Def *def;
         const char *key = inst_as_cstr(i);
-        if (!ht_get(&ht, key, &inst)) {
+        if (!inst_table_get(&it, key, (void*)(&def))) {
             fprintf(stderr, "ERROR: cannot find inst\n");
             return 1;
-        } else {
-            printf("inst `%s` has found\n", inst_as_cstr(inst));
-        }
+        } else printf("inst `%s` has found\n", def->as_cstr);
     }
 
-    ht_clean(&ht);
+    inst_table_clean(&it);
     return 0;
 }

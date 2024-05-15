@@ -31,9 +31,9 @@ extern const uint32_t sha256_keys[64];
 void sha256_proc(struct sha256 *s, const uint8_t *buf);
 
 struct ht_item {
-    const char *key;
-    i64 value;
     i64 hash;
+    void *value;
+    const char *key;
 };
 
 struct bucket {
@@ -71,14 +71,14 @@ void ht_clean(Hash_Table *ht);
 void ht_summary(Hash_Table *ht);
 void ht_init(Hash_Table *ht, size_t capacity);
 
-struct ht_item *ht_item_create(const char *key, i64 value, i64 hash);
+struct ht_item *ht_item_create(const char *key, void *value, i64 hash);
 
 struct bucket **buckets_create(size_t count);
 struct bucket *bucket_create(struct ht_item *item);
 struct bucket *ht_bucket_search(struct bucket *list, i64 hash);
 void ht_bucket_push(Hash_Table *ht, struct ht_item *new_item, i64 index);
 
-int ht_get(Hash_Table *ht, const char *key, i64 *dst);
-void ht_insert(Hash_Table *ht, const char *key, i64 value);
+int ht_get(Hash_Table *ht, const char *key, void **dst);
+void ht_insert(Hash_Table *ht, const char *key, void *value);
 
 #endif // HT_H_
