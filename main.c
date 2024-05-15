@@ -181,7 +181,7 @@ int main()
     inst_table_init(&it, HT_CAPACITY);
 
     generate_inst_table(&it);
-    inst_table_summary(it.ht);
+    inst_table_summary(&it);
 
     // check that all instructions has put and can be taking out
     for (size_t i = INST_MOV; i < IC; ++i) {
