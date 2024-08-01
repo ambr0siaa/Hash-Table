@@ -41,7 +41,7 @@ i64 hash_func_primary(const char *str)
 {
     i64 result = 0;
     struct md5 m = {0};
-    size_t size = sizeof(str) - 1;
+    size_t size = strlen(str) - 1;
 
     m.flag = 0;
     m.h[0] = 0x67452301;
@@ -125,7 +125,7 @@ i64 hash_func_primary(const char *str)
         result <<= 8;
     }
 
-    return result;
+    return result; 
 }
 
 void sha256_proc(struct sha256 *s, const uint8_t *buf)
